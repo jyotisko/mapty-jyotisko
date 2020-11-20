@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <link rel="shortcut icon" type="image/png" href="/icon.png" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin="" />
+  <script defer src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="shortcut icon" type="image/png" href="./images/icon.png" />
+  <link rel="stylesheet" href="style.css" />
+
+  <script defer src="script.js"></script>
+  <title>Mapty // Map your workouts</title>
+</head>
+
+<body>
+  <div class="sidebar">
+    <img src="./images/logo.png" alt="Logo" class="logo" />
+
+    <ul class="workouts">
+      <form class="form hidden">
+        <div class="form__row">
+          <label class="form__label">Type</label>
+          <select class="form__input form__input--type">
+            <option value="running">Running</option>
+            <option value="cycling">Cycling</option>
+          </select>
+        </div>
+        <div class="form__row">
+          <label class="form__label">Distance</label>
+          <input class="form__input form__input--distance" placeholder="km" />
+        </div>
+        <div class="form__row">
+          <label class="form__label">Duration</label>
+          <input class="form__input form__input--duration" placeholder="min" />
+        </div>
+        <div class="form__row">
+          <label class="form__label">Cadence</label>
+          <input class="form__input form__input--cadence" placeholder="step/min" />
+        </div>
+        <div class="form__row form__row--hidden">
+          <label class="form__label">Elev Gain</label>
+          <input class="form__input form__input--elevation" placeholder="meters" />
+        </div>
+        <button class="form__btn">OK</button>
+      </form>
+
+      <!-- 
+      <li class="workout workout--running" data-id="1234567890">
+        <h2 class="workout__title">Running on April 14</h2>
+        <div class="workout__details">
+          <span class="workout__icon">🏃‍♂️</span>
+          <span class="workout__value">5.2</span>
+          <span class="workout__unit">km</span>
+        </div>
+        <div class="workout__details">
+          <span class="workout__icon">⏱</span>
+          <span class="workout__value">24</span>
+          <span class="workout__unit">min</span>
+        </div>
+        <div class="workout__details">
+          <span class="workout__icon">⚡️</span>
+          <span class="workout__value">4.6</span>
+          <span class="workout__unit">min/km</span>
+        </div>
+        <div class="workout__details">
+          <span class="workout__icon">🦶🏼</span>
+          <span class="workout__value">178</span>
+          <span class="workout__unit">spm</span>
+        </div>
+      </li>
+
+      <li class="workout workout--cycling" data-id="1234567891">
+        <h2 class="workout__title">Cycling on April 5</h2>
+        <div class="workout__details">
+          <span class="workout__icon">🚴‍♀️</span>
+          <span class="workout__value">27</span>
+          <span class="workout__unit">km</span>
+        </div>
+        <div class="workout__details">
+          <span class="workout__icon">⏱</span>
+          <span class="workout__value">95</span>
+          <span class="workout__unit">min</span>
+        </div>
+        <div class="workout__details">
+          <span class="workout__icon">⚡️</span>
+          <span class="workout__value">16</span>
+          <span class="workout__unit">km/h</span>
+        </div>
+        <div class="workout__details">
+          <span class="workout__icon">⛰</span>
+          <span class="workout__value">223</span>
+          <span class="workout__unit">m</span>
+        </div>
+      </li> -->
+    </ul>
+
+    <button class="reset">Reset</button>
+    <button class="fit-all-markers">View all markers</button>
+    <p class="copyright">
+      &copy; Copyright by
+      <a class="twitter-link" target="_blank" href="https://twitter.com/jonasschmedtman">Jonas Schmedtmann</a>. Use for
+      learning or your portfolio. Don't use to teach. Don't claim
+      as your own.
+    </p>
+  </div>
+
+  <div class="weather-popup">
+    <svg class="close-weather-popup" height="329pt" viewBox="0 0 329.26933 329" width="329pt"
+      xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="m194.800781 164.769531 128.210938-128.214843c8.34375-8.339844 8.34375-21.824219 0-30.164063-8.339844-8.339844-21.824219-8.339844-30.164063 0l-128.214844 128.214844-128.210937-128.214844c-8.34375-8.339844-21.824219-8.339844-30.164063 0-8.34375 8.339844-8.34375 21.824219 0 30.164063l128.210938 128.214843-128.210938 128.214844c-8.34375 8.339844-8.34375 21.824219 0 30.164063 4.15625 4.160156 9.621094 6.25 15.082032 6.25 5.460937 0 10.921875-2.089844 15.082031-6.25l128.210937-128.214844 128.214844 128.214844c4.160156 4.160156 9.621094 6.25 15.082032 6.25 5.460937 0 10.921874-2.089844 15.082031-6.25 8.34375-8.339844 8.34375-21.824219 0-30.164063zm0 0" />
+    </svg>
+    <div class="weather-details">
+      <div class="part-1">
+        <h1>City: </h1>
+        <h1>Latitude: </h1>
+        <h1>Longitude: </h1>
+        <h1>Main weather: </h1>
+        <h1>Current Temperature: </h1>
+        <h1>Feels like: </h1>
+        <h1>Minimun Temperature: </h1>
+        <h1>Maximum Temperature: </h1>
+        <h1>Wind Speed: </h1>
+      </div>
+      <div class="part-2">
+        <h1 class="city">NA</h1>
+        <h1 class="lat">NA</h1>
+        <h1 class="lon">NA</h1>
+        <h1 class="main-weather">NA</h1>
+        <h1 class="current-temp">NA</h1>
+        <h1 class="feels-like-temp">NA</h1>
+        <h1 class="min-temp">NA</h1>
+        <h1 class="max-temp">NA</h1>
+        <h1 class="wind-speed">NA</h1>
+      </div>
+    </div>
+  </div>
+
+  <div id="map">
+
+  </div>
+  <!-- <button class="leaflet-weather-button"></button> -->
+</body>
+
+</html>
